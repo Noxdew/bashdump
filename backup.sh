@@ -1,25 +1,42 @@
 #!/bin/bash
 echo Dumping database
-ROOTDIR=/app/bashdump
+ROOTDIR=/config
 CONFIGFILE=$ROOTDIR/.dropbox_uploader
-mongodump
-NEWFILE=dump`date +%Y-%m-%d`.tar.gz
+DROPBOXFOLDER="${DROPBOXFOLDER:-/}"
+BACKUPSTOKEEP="${BACKUPSTOKEEP:-365}"
+
+mongodump $MONGODUMPPARAMS
+
+NEWFILE=dump`date +%Y-%m-%d-%H-%M-%S`_${BACKUPSUFFIX:-mongo}.tar.gz
 echo Compressing folder to $NEWFILE
 tar -zcvf $NEWFILE dump
+
 echo Uploading to DropBox
-$ROOTDIR/dropbox_uploader.sh -f $CONFIGFILE upload $NEWFILE /
+/dropbox_uploader.sh -f $CONFIGFILE upload $NEWFILE $DROPBOXFOLDER
+
 echo Removing temporary data
 rm -rf dump
 rm $NEWFILE
+
 echo Removing old backups
 TOTAL=0
-DUMPS=`$ROOTDIR/dropbox_uploader.sh -f $CONFIGFILE list | awk '{print $3}' | grep dump | sort -r`
+DUMPS=`/dropbox_uploader.sh -f $CONFIGFILE list $DROPBOXFOLDER | awk '{print $3}' | grep dump | sort -r`
+
+case "$DROPBOXFOLDER" in
+*/)
+    DROPBOXFOLDERWITHSLASH=$DROPBOXFOLDER
+    ;;
+*)
+    DROPBOXFOLDERWITHSLASH=$DROPBOXFOLDER/
+    ;;
+esac
+
 for i in $DUMPS
 do
-    if [[ "$TOTAL" == 3 ]]
+    if [[ "$TOTAL" == $BACKUPSTOKEEP ]]
     then
         echo Deleting $i
-        $ROOTDIR/dropbox_uploader.sh -f $CONFIGFILE delete /$i
+        /dropbox_uploader.sh -f $CONFIGFILE delete $DROPBOXFOLDERWITHSLASH$i
     else
         TOTAL=$((TOTAL + 1))
     fi
