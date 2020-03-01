@@ -1,41 +1,24 @@
 # BashDump
-Tool for automatic backup of MongoDB to DropBox.
+Tool for automatic backup of MongoDB to S3/DigitalOcean Spaces.
 
 ## Development
 
-1. Don't forget to `git submodule update --recursive --remote`
-2. Build with `docker build -t noxdew/bashdump .`
+1. Build the executable with `go build`
+2. Build the docker image with `docker build -t noxdew/bashdump .`
 
 ## Getting Started
 
-NOTE: This repo has been restructured to work inside Docker. You can still use it independently. Run `dropbox_uploader.sh` to setup your account and then add `backup.sh` to cron to be run whenever you want to backup.
+NOTE: This repo has been restructured to work inside Kubernetes Cron Jobs and to upload to a cloud provider bucket. You can still use the older version by checking out to `01f22810647b2e2987853b775f6011bfe4403f1c` and read the README for that version.
 
-1. Run the container interactively with `ACCOUNTSETUP` set to `true`. This will walk you through setting up you account. Don't forget to mount `/config` to a folder on the host.
-Command `docker run --rm -v "$(pwd)"/config:/config -e ACCOUNTSETUP='true' -i noxdew/bashdump`
-2. Run the container normally with all of the following variables set:
+1. To backup a DB run `bashdump dump` with the environmental variables listed below. It will create a dump and upload it to `{prefix}/{year}/{month}/{day}/dump{date}.tar.gz` in your bucket
+2. To restore a DB run `bashdump restore` with the environmental variables listed below. It will find the latest backup in the prefix and restore only databases that are not present in the instance
 
-`DROPBOXFOLDER`: The folder in dropbox the backups will be uploaded to. You must create the folder manually in advance. Defaults to `/`.
-
-`BACKUPSTOKEEP`: The number of backups to be kept. If you have more backups than that the oldest will be deleted. Defaults to 365 - 1 year assuming daily backups.
-
-`BACKUPSUFFIX`: a string which will be appended to each backup. This is to allow multiple instances to be backing up to the same folder and be able to identidy them.
-
-`MONGODUMPPARAMS`: all parameters to be passed to `mongodump`. Empty by default, meaning it will try to connect to `localhost`.
-
-`CRONPERIOD`: the string defining the cronjob period. Default is daily `30 2 * * *`.
-
-### Guide for using cron to set up daily backup
-
-1. Open crontab file `crontab -e`
-2. Add a line for your job. The following like will make `backup.sh` run every night at 2:30 AM
-
-  `30 2 * * * /path/to/backup.sh`
-
-See [Dropbox Uploader](https://github.com/andreafabrizi/Dropbox-Uploader) for more information.
-
-### Known problems
-
-1. When identifying old backups to delete it doesn't consider the suffix. So if 2 instances are being backed up in the same folder, only half of the backus specified with `BACKUPSTOKEEP` will be kept.
+- `DO_ACCESS_KEY`: DO or S3 access key
+- `DO_SECRET_ACCESS_KEY`: DO or S3 secret key
+- `DO_SPACES_ENDPOINT`: the DO or S3 endpoint
+- `DO_SPACES_BUCKET`: the name of the DO Space or S3 bucket bashdump should upload to
+- `DO_SPACES_PREFIX`: what is the starting path to the backups
+- `MONGO_URI`: the URI to connect to the mongo instance
 
 ## Ideas and Contributions
 are always welcome :heart:
