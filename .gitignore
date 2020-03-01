@@ -1,3 +1,6 @@
 .dropbox_uploader
 dropbox_uploader
 config
+dump
+bashdump
+.vscode
