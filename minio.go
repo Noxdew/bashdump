@@ -34,7 +34,9 @@ func newMinio() *bucket {
 }
 
 func (b *bucket) upload(filePath, destination string) error {
-	_, err := b.client.FPutObject(b.bucketName, destination, filePath, minio.PutObjectOptions{})
+	_, err := b.client.FPutObject(b.bucketName, destination, filePath, minio.PutObjectOptions{
+		ContentType: "application/x-gzip",
+	})
 	return err
 }
 
