@@ -10,6 +10,6 @@ require (
 	github.com/mongodb/mongo-tools v0.0.0-20200227211448-cd4239da251a
 	github.com/mongodb/mongo-tools-common v2.0.3+incompatible
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	go.mongodb.org/mongo-driver v1.3.0
-	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d // indirect
+	go.mongodb.org/mongo-driver v1.5.1
+	gopkg.in/ini.v1 v1.66.2 // indirect
 )
