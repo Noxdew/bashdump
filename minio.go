@@ -1,12 +1,12 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 
 	"github.com/minio/minio-go"
-	"github.com/mongodb/mongo-tools-common/log"
+	"github.com/mongodb/mongo-tools/common/log"
 )
 
 type bucket struct {
@@ -65,7 +65,7 @@ func (b *bucket) getLatestBackup(prefix string) ([]byte, error) {
 	}
 
 	log.Logvf(log.Always, "reading backup")
-	buffer, err := ioutil.ReadAll(obj)
+	buffer, err := io.ReadAll(obj)
 	return buffer, err
 }
 

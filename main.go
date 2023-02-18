@@ -3,12 +3,11 @@ package main
 import (
 	"bytes"
 	"errors"
-	"io/ioutil"
 	"os"
 	"path"
 	"time"
 
-	"github.com/mongodb/mongo-tools-common/log"
+	"github.com/mongodb/mongo-tools/common/log"
 )
 
 const workdir = "dump"
@@ -17,7 +16,7 @@ func main() {
 	prefix := os.Getenv("DO_SPACES_PREFIX")
 
 	if len(os.Args) < 2 {
-		panic(errors.New("Usage: bashdump [dump|restore]"))
+		panic(errors.New("usage: bashdump [dump|restore]"))
 	}
 
 	if os.Args[1] == "dump" {
@@ -61,7 +60,7 @@ func main() {
 		}
 
 		// restore backup
-		files, err := ioutil.ReadDir(workdir)
+		files, err := os.ReadDir(workdir)
 		if err != nil {
 			panic(err)
 		}
@@ -84,7 +83,7 @@ func main() {
 			panic(err)
 		}
 	} else {
-		panic(errors.New("Usage: bashdump [dump|restore]"))
+		panic(errors.New("usage: bashdump [dump|restore]"))
 	}
 }
 

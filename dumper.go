@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/mongodb/mongo-tools-common/log"
-	"github.com/mongodb/mongo-tools-common/options"
-	"github.com/mongodb/mongo-tools-common/progress"
-	"github.com/mongodb/mongo-tools-common/signals"
-	"github.com/mongodb/mongo-tools-common/util"
+	"github.com/mongodb/mongo-tools/common/log"
+	"github.com/mongodb/mongo-tools/common/options"
+	"github.com/mongodb/mongo-tools/common/progress"
+	"github.com/mongodb/mongo-tools/common/signals"
+	"github.com/mongodb/mongo-tools/common/util"
 	"github.com/mongodb/mongo-tools/mongodump"
 )
 
@@ -23,13 +23,13 @@ func dump() error {
 	uri := os.Getenv("MONGO_URI")
 
 	// initialize command-line opts
-	opts := options.New("mongodump", "bashdump", "bashdump", mongodump.Usage, options.EnabledOptions{Auth: true, Connection: true, Namespace: true, URI: true})
+	opts := options.New("mongodump", "bashdump", "bashdump", mongodump.Usage, false, options.EnabledOptions{Auth: true, Connection: true, Namespace: true, URI: true})
 
 	inputOpts := &mongodump.InputOptions{}
 	opts.AddOptions(inputOpts)
 	outputOpts := &mongodump.OutputOptions{}
 	opts.AddOptions(outputOpts)
-	opts.URI.AddKnownURIParameters(options.KnownURIOptionsReadPreference)
+	// opts.URI.AddKnownURIParameters(options.KnownURIOptionsReadPreference)
 
 	args, err := opts.ParseArgs([]string{"--uri", uri})
 	if err != nil {
@@ -77,12 +77,12 @@ func dump() error {
 
 	if err = dump.Init(); err != nil {
 		log.Logvf(log.Always, "Failed: %v", err)
-		return fmt.Errorf("Failed: %v", err)
+		return fmt.Errorf("failed: %v", err)
 	}
 
 	if err = dump.Dump(); err != nil {
 		log.Logvf(log.Always, "Failed: %v", err)
-		return fmt.Errorf("Failed: %v", err)
+		return fmt.Errorf("failed: %v", err)
 	}
 
 	return nil
